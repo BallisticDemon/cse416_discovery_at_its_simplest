@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Display a globe on a webpage</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/8.1.2/superagent.js"></script>-->
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.css" rel="stylesheet">
+<link href="./index.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.js"></script>
+
+<!-- <style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 20%; width: 50%; }
+</style> -->
+</head>
+<body>
+	
+<div id="map"></div>
+<form id="upload-file-form">
+	<input type="file" id="geographical-file">
+
+</form>
+
+ 
+<script>
+	//https://www.mapbox.com/api/login
+
+
+
+	mapboxgl.accessToken = 'pk.eyJ1IjoiYWd1YW5hIiwiYSI6ImNsbTI2cmZzYzI3bDgzcHBqZWVnbWJ3ZHEifQ.01-MknfmRTOM8W_duhx_3A';
+const map = new mapboxgl.Map({
+container: 'map',
+// Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+style: 'mapbox://styles/mapbox/satellite-streets-v11',
+zoom: 1.5,
+center: [30, 50],
+projection: 'globe'
+});
+
+
+ 
+map.on('load', () => {
+// Set the default atmosphere style
+map.setFog({});
+
+// add a new source for USA boundaries
+map.addSource('usa-states', {
+	type: 'geojson',
+	data: 'data/USA_adm1-2.json'
+})
+
+map.addLayer({
+	id: 'usa-states-fill',
+	type: 'fill',
+	source: 'usa-states',
+	paint: {
+		'fill-color': 'orange'
+	}
+})
+});
+
+
+
+const geographical_file = document.querySelector("#geographical-file")
+	var uploaded_file = "";
+
+	geographical_file.addEventListener("change", function(){
+    	const reader = new FileReader();
+    	reader.addEventListener("load", () => {
+        	uploaded_file = reader.result;
+        	map.getSource('usa-states').setData(uploaded_file);
+    	})
+    	reader.readAsDataURL(this.files[0]);
+	})
+</script>
+ 
+</body>
+</html>
