@@ -1,13 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+	<meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Read data from file - Mapbox</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="index.css" />
+<!-- <meta charset="utf-8">
 <title>Display a globe on a webpage</title>
-<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"> -->
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/8.1.2/superagent.js"></script>-->
-<link href="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.css" rel="stylesheet">
+<!-- <link href="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.css" rel="stylesheet">
 <link href="./index.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.js"></script>
+<script src='./node_modules/@mapbox/togeojson/togeojson.js' type="module"></script> -->
+<!-- <script src="./node_modules/fs/package.json"></script> -->
+<!-- <script src="./index.js" type="module"></script> -->
 
 <!-- <style>
 body { margin: 0; padding: 0; }
@@ -15,17 +28,42 @@ body { margin: 0; padding: 0; }
 </style> -->
 </head>
 <body>
+	<div class="wrapper">
+		<div id="map"></div>
+	  </div>
+	  <input
+		type="file"
+		id="fileSelect"
+		accept=".kml,.geojson,.shp,.zip"
+		style="position: fixed; top: 1rem; left: 1rem"
+	  />
 	
-<div id="map"></div>
+<!--<div id="map"></div>
 <form id="upload-file-form">
 	<input type="file" id="geographical-file">
 
 </form>
 
  
-<script>
-	//https://www.mapbox.com/api/login
+<script type="module">
+	//import {toGeoJSON} from "../node_modules/@mapbox/togeojson"
+	//import toGeoJson
+	//const converter = new togeojson();
+	//const fs = new FileSystem();
+	function loadKML(file){
+	// read in our KML file and then parse it
+	const parsedKML = new DOMParser().parseFromString(
+		FileSystem().readFileSync(file, "utf8")
+	)
 
+	// convert our kml to geojson and store the results
+	const geojsonData = toGeoJSON.kml(parsedKML)
+	//console.log(uploaded_file);
+	return geojsonData
+	}
+	//https://www.mapbox.com/api/login
+	 //import {toGeoJSON} from "./@mapbox/togeojson";
+	// import { DOMParser } from "./xmldom";
 
 
 	mapboxgl.accessToken = 'pk.eyJ1IjoiYWd1YW5hIiwiYSI6ImNsbTI2cmZzYzI3bDgzcHBqZWVnbWJ3ZHEifQ.01-MknfmRTOM8W_duhx_3A';
@@ -41,13 +79,26 @@ projection: 'globe'
 
  
 map.on('load', () => {
+	// map.addLayer({
+	// 	id: 'map-layer',
+	// 	type: 'fill',
+	// 	source: {
+	// 		type: 'geojson',
+	// 		data: 'data/AUS_adm2-2.json'
+	// 	},
+	// 	'source-layer': 'map-layer-fill',
+	// 	paint: {
+	// 		'fill-color': 'orange'
+	// 	}
+
+	// })
 // Set the default atmosphere style
 map.setFog({});
 
 // add a new source for USA boundaries
 map.addSource('usa-states', {
 	type: 'geojson',
-	data: 'data/USA_adm1-2.json'
+	data: 'data/USA_adm2-2.json'
 })
 
 map.addLayer({
@@ -63,17 +114,93 @@ map.addLayer({
 
 
 const geographical_file = document.querySelector("#geographical-file")
-	var uploaded_file = "";
+	//const file = this.files[0];
+	// const converter = require("@tmcw/togeojson")
+	// const fs = require("fs")
+	// const DOMParser = require("xmldom").DOMParser
+	let uploaded_file = "";
 
 	geographical_file.addEventListener("change", function(){
     	const reader = new FileReader();
-    	reader.addEventListener("load", () => {
+		const fileName = document.querySelector('#geographical-file').value;
+    	const extension = fileName.split('.').pop();
+		reader.addEventListener("load", () => {
         	uploaded_file = reader.result;
-        	map.getSource('usa-states').setData(uploaded_file);
+			console.log(extension);
+			//console.log(uploaded_file);
+			if (extension === 'kml'){
+				// index.js
+				// const converter = require("@tmcw/togeojson")
+				// const fs = require("fs")
+				// const DOMParser = require("xmldom").DOMParser
+				//let geojsonConverter = new toGeoJson()
+				//let domParser = new DOMParser();
+// // read in our KML file and then parse it
+// 				const parsedKML = new DOMParser().parseFromString(
+//   					fs.readFileSync(uploaded_file, "utf8")
+// 				)
+
+// // convert our kml to geojson and store the results
+// 				const geojsonData = converter.kml(parsedKML)
+// 				//console.log(uploaded_file);
+
+				console.log('heloo');
+				let geojsonData = loadKML(uploaded_file)
+				// //const kmlData = new DOMParser().parseFromString(uploaded_file, 'text/xml');
+				// const geojsonData = toGeoJSON.kml(uploaded_file);
+				// geojsonData = JSON.stringify(geojsonData);
+				// //console.log("heloo");
+				console.log(geojsonData);
+				map.getSource('usa-states').setData(geojsonData);
+			}else{
+        		map.getSource('usa-states').setData(uploaded_file);
+			}
     	})
     	reader.readAsDataURL(this.files[0]);
+		//console.log(url_maybe);
+		// let uploaded_file = reader.result;
+		// //let uploaded_file_text = reader.readAsText(uploaded_file);
+		// let fileName = document.querySelector('#geographical-file').value;
+        // let extension = fileName.split('.').pop();
+		// console.log(extension);
+    	// reader.addEventListener("load", () => {
+        // 	//uploaded_file = reader.result;
+		// 	if (extension === '.json'){
+		// 		//reader.onload = async () => {
+		// 			console.log("Am I in .json?");
+		// 			map.getSource('usa-states').setData(uploaded_file);
+		// 		//}
+		// 	}else if (extension === '.zip' || extension === '.kml'){
+		// 		//reader.onload = async () => {
+		// 			let geojsonData;
+					
+		// 			if (extension === '.zip'){
+		// 				geojsonData = shp(uploaded_file);
+		// 			}else if (extension === '.kml'){
+		// 				const kmlData = new DOMParser().parseFromString(uploaded_file, 'text/xml');
+		// 				geojsonData = toGeoJSON.kml(kmlData);
+		// 				geojsonData = JSON.stringify(geojsonData);
+		// 				console.log("heloo");
+		// 				console.log(geojsonData);
+		// 			}
+		// 			if (geojsonData) {
+		// 				map.getSource('usa-states').setData(uploaded_file);
+		// 			}else{
+		// 				console.error('Could not parse geojsonData.');
+		// 			}
+		// 		//}
+		// 	}
+
+    	// })
+    	// reader.readAsDataURL(this.files[0]);
 	})
 </script>
- 
+-->
 </body>
+<script src="./kmlToJson.js"></script>
+  <script src="index.js"></script>
+  <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+  <script src="https://unpkg.com/shapefile@0.6"></script>
+<!-- <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+<script src="https://unpkg.com/shapefile@0.6"></script> -->
 </html>

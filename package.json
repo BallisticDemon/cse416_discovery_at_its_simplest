@@ -1,5 +1,11 @@
 {
   "dependencies": {
-    "superagent": "^8.1.2"
+    "@mapbox/togeojson": "^0.16.0",
+    "fs": "^0.0.1-security",
+    "mapbox-gl": "^2.15.0",
+    "shpjs": "^4.0.4",
+    "superagent": "^8.1.2",
+    "togeojson": "^0.16.0",
+    "xmldom": "^0.6.0"
   }
 }
